@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "mybatis.mapper-location",
+      "type": "java.lang.String",
+      "description": "Description for mybatis.mapper-location."
+    },
+    {
+      "name": "dfs.hdfsUserName",
+      "type": "java.lang.String",
+      "description": "Description for dfs.hdfsUserName."
+    },
+    {
+      "name": "files.upload",
+      "type": "java.lang.String",
+      "description": "Description for files.upload."
+    }
+  ] }

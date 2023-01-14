@@ -1,0 +1,36 @@
+server:
+  port: 9090
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/graduation?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: root
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+
+#mybatis:
+#  #config-location: classpath:mybaties/mybatis-config.xml   #全局配置文件
+#  #mapper-locations: classpath:mybaties/mapper/*.xml         #sql配置文件
+#  configuration: #全局配置文件  建议配置在yam里面
+#    map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#pageHelper配置（官网推荐配置）
+#pagehelper:
+#  helperDialect: mysql
+#  reasonable: true
+#  supportMethodsArguments: true
+#  params: count=countSql
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+    call-setters-on-nulls: true
+files:
+  upload:
+    path: D:/idea2020/IdeaProjects/graduation/src/main/resources/files/
+
