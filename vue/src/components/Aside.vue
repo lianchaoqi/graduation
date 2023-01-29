@@ -31,11 +31,37 @@
         <el-submenu index="2">
             <template slot="title">
                 <i class="el-icon-menu"></i>
-                <span slot="title">数据管理</span>
+                <span slot="title">文件管理</span>
             </template>
             <el-menu-item index="/file">
-                <i class="el-icon-s-custom"></i>
-                <span slot="title">文件管理</span>
+                <i class="el-icon-folder-opened"></i>
+                <span slot="title">源文件管理</span>
+            </el-menu-item>
+            <el-menu-item index="/res">
+                <i class="el-icon-folder-opened"></i>
+                <span slot="title">结果集管理</span>
+            </el-menu-item>
+        </el-submenu>
+        <el-submenu index="3">
+            <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span slot="title">可视化管理</span>
+            </template>
+            <el-menu-item index="/graph">
+                <i class="el-icon-s-data"></i>
+                <span slot="title">流派年份销量条形图</span>
+            </el-menu-item>
+            <el-menu-item index="/graph1">
+                <i class="el-icon-s-data"></i>
+                <span slot="title">流派年份折线图</span>
+            </el-menu-item>
+            <el-menu-item index="/graph2">
+                <i class="el-icon-s-data"></i>
+                <span slot="title">流派年份条形图</span>
+            </el-menu-item>
+            <el-menu-item index="/graph3">
+                <i class="el-icon-s-data"></i>
+                <span slot="title">流派销量饼图</span>
             </el-menu-item>
         </el-submenu>
     </el-menu>

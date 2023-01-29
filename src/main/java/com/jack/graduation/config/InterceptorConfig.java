@@ -25,6 +25,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
                                     "/user/registerUser",
                                     "/**/exportUser",
                                     "/file/**",
+                                    "/echarts/**",
+                                    "/status/**",
+                                    "/hadoopStatus",
                                     "/sparkCon/**",
                                     "/file/uploadToHdfs");//放行配置
     }

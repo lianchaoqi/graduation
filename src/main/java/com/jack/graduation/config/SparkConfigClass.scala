@@ -20,8 +20,12 @@ class SparkConfigClass {
   private val hiveWarehouseDirPath: String = properties.getProperty("hive.warehouse.dir.path")
   private val hiveMetastoreUris: String = properties.getProperty("hive.metastore.uris")
   private val hiveMetastoreUrisPath: String = properties.getProperty("hive.metastore.uris.path")
+
+
+
   System.getProperty("HADOOP_USER_NAME", "jack")
   System.getProperty("user.name", "jack")
+
   @Bean
   def getSparkConfig: SparkConf = {
     System.getProperty("HADOOP_USER_NAME", "jack")
@@ -45,6 +49,7 @@ class SparkConfigClass {
       .enableHiveSupport()
       .config(hiveMetastoreUris, hiveMetastoreUrisPath)
       .getOrCreate()
+
     sparkSession
   }
 

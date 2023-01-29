@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -97,7 +95,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileInfo> implement
             fs = hdfsUtil.getFileSystem();
             if (isEtl == 0) {
                 //创建输入流
-                System.out.println("hdfs:" + hdfsConfig.getHdfsPath() + newFileName);
                 fis = fs.open(new Path(hdfsConfig.getHdfsPath() + newFileName));
                 resBytes = IOUtils.readFullyToByteArray(fis);
             } else {

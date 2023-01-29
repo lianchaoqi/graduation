@@ -10,7 +10,6 @@ import com.jack.graduation.service.FileService;
 import com.jack.graduation.service.SparkFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -64,5 +63,41 @@ public class SparkController {
         return Result.error(Constants.CODE_500, "spark异常，清洗系统错误！");
     }
 
+    @GetMapping("/dwsAlbum/{dt}/{filename}")
+    public Result analysisFile(@PathVariable String dt, @PathVariable String filename) {
+        boolean dwdToDwsRes = sparkFileService.albumDwdToDws(dt, filename);
+        try {
+            if (dwdToDwsRes) {
+                //获取当前时间
+                Date date = new Date(System.currentTimeMillis());
+                //时间格式转换
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String createTime = dateFormat.format(date);
+                //宽表album
+                Result res = sparkFileService.dwsAlbum(dt, filename, createTime);
+                if (res != null) {
+                    return Result.success("true");
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException(Constants.CODE_500, e.getMessage());
+        }
+        return Result.success("false");
+    }
 
+    //流派年份维度
+    @GetMapping("/adsAlbumGnereYear/{dt}/{filename}")
+    public Result adsAlbumGnereYear(
+            @PathVariable("dt") String dt,
+            @PathVariable("filename") String filename) {
+        return sparkFileService.adsAlbumGnereYear(dt, filename);
+    }
+
+    //国家流派年份维度
+    @GetMapping("/adsAlbumCountryGnereYear/{dt}/{filename}")
+    public Result adsAlbumCountryGnereYear(
+            @PathVariable("dt") String dt,
+            @PathVariable("filename") String filename) {
+        return sparkFileService.adsAlbumCountryGnereYear(dt, filename);
+    }
 }

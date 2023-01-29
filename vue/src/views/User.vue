@@ -133,8 +133,8 @@
                 }
             },
             reset() {
-                this.id = '',
-                    this.username = ''
+                this.id = ''
+                this.username = ''
                 this.getData()
             },
             getData() {

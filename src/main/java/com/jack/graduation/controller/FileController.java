@@ -11,7 +11,6 @@ import com.jack.graduation.bean.FileInfo;
 import com.jack.graduation.common.Constants;
 import com.jack.graduation.common.Result;
 import com.jack.graduation.service.FileService;
-import com.jack.graduation.service.SparkFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +19,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -29,7 +27,7 @@ import java.util.List;
  * @BelongsPackage: com.jack.graduation.controller
  * @Author: jack
  * @CreateTime: 2023-01-05  17:27
- * @Description: TODO 文件上传接口
+ * @Description: TODO 文件操作接口
  * @Version: jdk1.8
  */
 
@@ -56,7 +54,7 @@ public class FileController {
         String md5 = SecureUtil.md5(file.getInputStream());
         //下载路径
         String url = "http://localhost:9090/file/" + newOriginalFilename;
-        FileInfo fileInfo = new FileInfo(null, originalFilename, md5, uuid, type, size / 1024, url, null, null, null, null);
+        FileInfo fileInfo = new FileInfo(null, originalFilename, md5, uuid, type, size / 1024, url, null, null, null, null, null, null);
         //信息写进数据库
         fileService.save(fileInfo);
         //存储到hdfs

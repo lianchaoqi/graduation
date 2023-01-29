@@ -19,19 +19,26 @@
             <el-table-column prop="fileName" label="文件名" width="100"></el-table-column>
             <el-table-column prop="fileType" label="文件类型" width="70"></el-table-column>
             <el-table-column :formatter="formatIsEtl" prop="isEtl" label="是否清洗" width="70"></el-table-column>
+<!--            <el-table-column :formatter="formatIsAna" prop="isAnalysis" label="是否分析" width="70"></el-table-column>-->
             <el-table-column prop="uploadTime" label="上传时间" width="90"></el-table-column>
             <!--            <el-table-column prop="updateTime" label="修改时间" width="90"></el-table-column>-->
             <el-table-column prop="etlTime" label="清洗时间" width="90"></el-table-column>
-            <el-table-column prop="fileSize" label="大小(kb)" width="70"></el-table-column>
-            <el-table-column prop="uuid" label="uuid" width="245"></el-table-column>
+<!--            <el-table-column prop="analysisTime" label="分析时间" width="90"></el-table-column>-->
+                        <el-table-column prop="fileSize" label="大小(kb)" width="70"></el-table-column>
+            <el-table-column prop="uuid" label="uuid" width="250"></el-table-column>
             <el-table-column prop="url" label="下载地址" width="435"></el-table-column>
-            <el-table-column label="操作" width="215" align="center">
+            <el-table-column label="操作" width="210" align="center">
                 <template slot-scope="scope">
                     <el-button style="width: 60px;margin-left: 1px;text-align: center" type="success"
                                @click="cleanFile(scope.row)">清洗
                         <i
                                 class="el-icon-coin"></i>
                     </el-button>
+<!--                    <el-button style="width: 60px;margin-left: 1px;text-align: center" type="warning"-->
+<!--                               @click="analysisFile(scope.row)">分析-->
+<!--                        <i-->
+<!--                                class="el-icon-refresh"></i>-->
+<!--                    </el-button>-->
                     <el-button type="primary" @click="downloadFile(scope.row)"
                                style="width: 60px;margin-left: 1px;text-align: center">下载 <i
                             class="el-icon-caret-bottom"></i></el-button>
@@ -192,6 +199,10 @@
             formatIsEtl(row) {
                 return row.isEtl === 1 ? "已清洗" : "未清洗";
             },
+            //将后端的0&1映射为是和否
+            formatIsAna(row) {
+                return row.isEtl === 1 ? "已分析" : "未分析";
+            },
             //文件上传成功回传
             uploadToHdfsSuccess(res) {
                 console.log(res);
@@ -212,7 +223,6 @@
                 window.open(row.url + "/" + row.isEtl + '/' + row.etlTime.substr(0, 10))
             },
             cleanFile(row) {
-                console.log(row);
                 if (row.isEtl === 1) {
                     this.$message.error("文件已经清洗！")
                 } else {
@@ -226,6 +236,23 @@
                         } else {
                             this.$message.error("清洗失败！")
                             this.$message.error(res.msg)
+                        }
+                    })
+                }
+            },
+            analysisFile(row) {
+                if (row.isAnalysis === 1) {
+                    this.$message.error("文件已分析！")
+                } else {
+                    this.$message.success("文件正在分析处理中，请等待....")
+                    this.request.get("/sparkCon/analysisFile/" + row.id).then(res => {
+                        console.log(res);
+                        this.getData()
+                        if (res.code === '200') {
+                            this.getData()
+                            this.$message.success("分析成功！")
+                        } else {
+                            this.$message.error("分析失败！" + "\n" + res.msg)
                         }
                     })
                 }

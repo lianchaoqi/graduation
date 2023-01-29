@@ -36,7 +36,7 @@
         <!-- domainObjectName属性指定生成出来的实体类的类名 -->
 
 <!--        <table tableName="user" domainObjectName="User"/>-->
-        <table tableName="file_info" domainObjectName="File"/>
+        <table tableName="ads_album_gnere_year_nd" domainObjectName="AlbumGnereYear"/>
         <!--        <table tableName="albums_info" domainObjectName="Album"/>-->
         <!--        <table tableName="t_dept" domainObjectName="Dept"/>-->
     </context>

@@ -236,13 +236,6 @@
             <version>3.10.3</version>
         </dependency>
 
-        <!--spark依赖-->
-        <!--集群 5.0mysql驱动和hive的驱动-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.hive</groupId>-->
-        <!--            <artifactId>hive-exec</artifactId>-->
-        <!--            <version>1.2.1</version>-->
-        <!--        </dependency>-->
         <!--        因为我们需要使用Scala代码，所以我们还需要加入scala-library依赖-->
         <dependency>
             <groupId>org.scala-lang</groupId>
@@ -257,6 +250,10 @@
                 <exclusion>
                     <artifactId>hadoop-client</artifactId>
                     <groupId>org.apache.hadoop</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>scala-library</artifactId>
+                    <groupId>org.scala-lang</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -363,5 +360,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

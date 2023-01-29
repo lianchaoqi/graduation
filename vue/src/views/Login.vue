@@ -5,7 +5,7 @@
         <!--        </dic>-->
 
             <el-form :model="user" :rules="rules" ref="userForm" class="loginForm">
-                <div class="title1"><b>数字音乐分析系统</b></div>
+                <div class="title1"><b>登录</b></div>
                 <el-form-item prop="username" style="text-align: center; width:max-content;">
                     <el-input size="large" placeholder="账号" style="width: 250px;" prefix-icon="el-icon-user"
                               v-model="user.username"></el-input>

@@ -18,7 +18,12 @@ const routes = [
             // }
             {path: 'home', name: '首页', component: () => import('../views/Home.vue')},
             {path: 'user', name: '用户管理', component: () => import('../views/User.vue')},
-            {path: 'file', name: '文件管理', component: () => import('../views/File.vue')}
+            {path: 'file', name: '源文件管理', component: () => import('../views/File.vue')},
+            {path: 'res', name: '结果集管理', component: () => import('../views/Res.vue')},
+            {path: 'graph', name: '流派年份销量条形图', component: () => import('../views/Graph.vue')},
+            {path: 'graph1', name: '流派年份折线图', component: () => import('../views/Graph1.vue')},
+            {path: 'graph2', name: '流派年份条形图', component: () => import('../views/Graph2.vue')},
+            {path: 'graph3', name: '流派销量饼图', component: () => import('../views/Graph3.vue')}
         ]
     },
 

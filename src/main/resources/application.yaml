@@ -12,9 +12,9 @@ spring:
       max-request-size: 100MB
 
 
-#mybatis:
-#  #config-location: classpath:mybaties/mybatis-config.xml   #全局配置文件
-#  #mapper-locations: classpath:mybaties/mapper/*.xml         #sql配置文件
+  #mybatis:
+  #config-location: classpath:mybaties/mybatis-config.xml   #全局配置文件
+  #mapper-locations: classpath:mybaties/mapper/*.xml         #sql配置文件
 #  configuration: #全局配置文件  建议配置在yam里面
 #    map-underscore-to-camel-case: true
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -26,10 +26,12 @@ spring:
 #  supportMethodsArguments: true
 #  params: count=countSql
 mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    map-underscore-to-camel-case: true
-    call-setters-on-nulls: true
+    mapper-locations: mybaties/mapper/*.xml
+    configuration:
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+      map-underscore-to-camel-case: true
+      call-setters-on-nulls: true
+    type-aliases-package: com.jack.graduation.bean
 files:
   upload:
     path: D:/idea2020/IdeaProjects/graduation/src/main/resources/files/

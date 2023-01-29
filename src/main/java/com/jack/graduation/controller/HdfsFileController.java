@@ -1,8 +1,12 @@
 package com.jack.graduation.controller;
 
+import com.jack.graduation.common.Constants;
+import com.jack.graduation.common.Result;
 import com.jack.graduation.config.HdfsConfig;
 import com.jack.graduation.utils.HdfsUtil;
+import org.apache.hadoop.fs.FileSystem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,11 +28,6 @@ public class HdfsFileController {
     @Autowired
     private HdfsConfig hdfsConfig;
 
-    @RequestMapping("/test")
-    public boolean get() throws Exception {
-        boolean mkdir = hdfsUtil.mkdir(hdfsConfig.getPdfDataNode() + "jack123123");
-        return mkdir;
-    }
 
     @RequestMapping("/getFileList")
     public List<Map<String, String>> getFileList() throws Exception {
@@ -49,5 +48,15 @@ public class HdfsFileController {
     public void downloadFile() throws Exception {
         hdfsUtil.downloadFile("/graduation/application.properties", "D:/idea2020/IdeaProjects/graduation/src/main/resources/tt");
 
+    }
+
+    @GetMapping("/hadoopStatus")
+    public Result hdfsStatus() {
+        try {
+            List<Map<String, String>> maps = hdfsUtil.listFile(hdfsConfig.getHdfsPath());
+        } catch (Exception e) {
+            return Result.error(Constants.CODE_500, e.getMessage());
+        }
+        return Result.success("true");
     }
 }
