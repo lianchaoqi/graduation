@@ -20,9 +20,9 @@ class SparkConfigClass {
   private val hiveWarehouseDirPath: String = properties.getProperty("hive.warehouse.dir.path")
   private val hiveMetastoreUris: String = properties.getProperty("hive.metastore.uris")
   private val hiveMetastoreUrisPath: String = properties.getProperty("hive.metastore.uris.path")
-
-
-
+//    .setMaster("spark://hadoop101:7077")
+//    .setJars(List("spark-core/target/spark-core-1.0-SNAPSHOT.jar"))
+//    .set("spark.driver.host", "myword")
   System.getProperty("HADOOP_USER_NAME", "jack")
   System.getProperty("user.name", "jack")
 
@@ -33,6 +33,7 @@ class SparkConfigClass {
     val sparkConfig: SparkConf = new SparkConf()
       .setMaster(master)
       .setAppName(appName)
+      .setJars(List("target/graduation-0.0.1-SNAPSHOT.jar"))
       .set(hostNameCongig, hostName)
       .set(hiveWarehouseDir, hiveWarehouseDirPath)
     sparkConfig

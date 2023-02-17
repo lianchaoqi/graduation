@@ -1,7 +1,12 @@
 package com.jack.graduation.controller;
 
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jack.graduation.bean.AlbumGnereYear;
+import com.jack.graduation.bean.User;
 import com.jack.graduation.common.Constants;
 import com.jack.graduation.common.Result;
 import com.jack.graduation.exception.ServiceException;
@@ -12,6 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -34,14 +42,14 @@ public class EchartsController {
 
     @RequestMapping("/albumGnereYear")
     public Result albumGnereYear(
-            @RequestParam(defaultValue = "Indie") String genre,
-            @RequestParam(defaultValue = "941cd0118a2d457182414507a4e95924") String filename,
+            @RequestParam(defaultValue = "Rock") String genre,
+            @RequestParam(defaultValue = "513716dc162f42d9814d459ab1a99729") String filename,
             @RequestParam(defaultValue = "2000") String startYear,
             @RequestParam(defaultValue = "2021") String endYear
 
     ) {
         try {
-            //mybatis plus查询流派等于 gnere的所有信息
+            //TODO:mybatis plus查询流派等于 gnere的所有信息
             QueryWrapper<AlbumGnereYear> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("genre", genre);
             queryWrapper.eq("filename", filename);
@@ -109,16 +117,15 @@ public class EchartsController {
         return Result.error(Constants.CODE_500, "删除数据错误！");
     }
 
-    //所有流派信息，条形图
+    //TODO:所有流派信息，条形图
     @RequestMapping("/albumAllGnereYear")
     public Result albumAllGnereYear(
-            @RequestParam(defaultValue = "941cd0118a2d457182414507a4e95924") String filename,
+            @RequestParam(defaultValue = "513716dc162f42d9814d459ab1a99729") String filename,
             @RequestParam(defaultValue = "2000") String startYear,
             @RequestParam(defaultValue = "2009") String endYear
 
     ) {
 
-//        Map<String, ArrayList<Long>> resMap = new HashMap<>();
         try {
 
             List<AlbumGnereYear> albumGnereYearList = albumGnereYearService.getTop10(startYear, endYear, filename);
@@ -126,12 +133,6 @@ public class EchartsController {
             Collections.sort(albumGnereYearList);
             //TODO:反转集合 实现倒序排序
             Collections.reverse(albumGnereYearList);
-            //封装到map里面
-//            for (AlbumGnereYear albumGnereYear : albumGnereYearList) {
-//                ArrayList<Long> list = resMap.getOrDefault(albumGnereYear.getGenre(), new ArrayList<>());
-//                list.add(albumGnereYear.getNumOfSales());
-//                resMap.put(albumGnereYear.getGenre(), list);
-//            }
             return Result.success(albumGnereYearList);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -142,13 +143,11 @@ public class EchartsController {
     //柱形图
     @RequestMapping("/albumAllGnereYearTop5")
     public Result albumAllGnereYearTop5(
-            @RequestParam(defaultValue = "941cd0118a2d457182414507a4e95924") String filename,
+            @RequestParam(defaultValue = "513716dc162f42d9814d459ab1a99729") String filename,
             @RequestParam(defaultValue = "2000") String startYear,
             @RequestParam(defaultValue = "2009") String endYear
 
     ) {
-
-//        Map<String, ArrayList<Long>> resMap = new HashMap<>();
         try {
             List<AlbumGnereYear> albumGnereYearList = albumGnereYearService.getTop5(startYear, endYear, filename);
             //TODO:对里面的年份排序
@@ -163,10 +162,10 @@ public class EchartsController {
         }
     }
 
-    //饼图
+    //TODO:饼图
     @RequestMapping("/getPieData")
     public Result pieGraph(
-            @RequestParam(defaultValue = "941cd0118a2d457182414507a4e95924") String filename,
+            @RequestParam(defaultValue = "513716dc162f42d9814d459ab1a99729") String filename,
             @RequestParam(defaultValue = "2000") String startYear,
             @RequestParam(defaultValue = "2021") String endYear
 
@@ -181,6 +180,69 @@ public class EchartsController {
         }
     }
 
+    @RequestMapping("/getAnalysisAllDataPage")
+    //TODO:分页数据
+    public Result getPage(@RequestParam Integer pageNum,
+                          @RequestParam Integer pageSize,
+                          @RequestParam(defaultValue = "513716dc162f42d9814d459ab1a99729") String filename,
+                          @RequestParam(defaultValue = "2023-02-16") String dt,
+                          @RequestParam(defaultValue = "") String id
+    ) {
+        List<AlbumGnereYear> list = albumGnereYearService.list();
+        IPage<AlbumGnereYear> page = new Page<>(pageNum, pageSize);
+        QueryWrapper<AlbumGnereYear> wrapper = new QueryWrapper<>();
+
+        //TODO:根据username搜索
+        if (!"".equals(filename)) {
+            wrapper.eq("filename", filename);
+        }
+        //TODO:根据id搜索
+        if (!"".equals(id)) {
+            wrapper.and(wra -> wra.eq("id", Integer.valueOf(id)));
+        }
+        //TODO:根据dt搜索
+        if (!"".equals(dt)) {
+            wrapper.and(wra -> wra.eq("dt", dt));
+        }
+        // wrapper.like("username", username);
+        // wrapper.and(a -> a.like("username", uname));
+        //TODO:正序排
+        wrapper.orderByAsc("id");
+        IPage<AlbumGnereYear> iPage = albumGnereYearService.page(page, wrapper);
+        return Result.success(iPage);
+    }
+
+    //TODO:导出结果集方法
+    @GetMapping("/exportRes")
+    public void export(HttpServletResponse response,
+                       @RequestParam(defaultValue = "513716dc162f42d9814d459ab1a99729") String filename,
+                       @RequestParam(defaultValue = "2023-02-16") String dt
+    ) throws Exception {
+        //TODO: 从数据库查询出所有的数据
+        QueryWrapper<AlbumGnereYear> wrapper = new QueryWrapper<>();
+        wrapper.eq("filename", filename);
+        wrapper.and(wra -> wra.eq("dt", dt));
+        List<AlbumGnereYear> list = albumGnereYearService.list(wrapper);
+        //TODO: 在内存操作，写出到浏览器
+        ExcelWriter writer = ExcelUtil.getWriter(true);
+        writer.addHeaderAlias("id", "ID");
+        writer.addHeaderAlias("genre", "流派");
+        writer.addHeaderAlias("albumYearOfPub", "专辑发售年份");
+        writer.addHeaderAlias("numOfTracks", "专辑销售歌曲数");
+        writer.addHeaderAlias("numOfSales", "专辑销售歌曲量");
+        writer.addHeaderAlias("dt", "文件分析日期");
+        writer.addHeaderAlias("filename", "文件名");
+        //TODO: 一次性写出list内的对象到excel，使用默认样式，强制输出标题
+        writer.write(list, true);
+        //TODO: 设置浏览器响应的格式
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+        String fileName = URLEncoder.encode("结果集信息", "UTF-8");
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xlsx");
+        ServletOutputStream out = response.getOutputStream();
+        writer.flush(out, true);
+        out.close();
+        writer.close();
+    }
 }
 
 

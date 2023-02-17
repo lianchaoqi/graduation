@@ -17,28 +17,33 @@
             <el-table-column type="selection" width="40"></el-table-column>
             <el-table-column prop="id" label="ID" width="40"></el-table-column>
             <el-table-column prop="fileName" label="文件名" width="100"></el-table-column>
-            <el-table-column prop="fileType" label="文件类型" width="70"></el-table-column>
+            <!--            <el-table-column prop="fileType" label="文件类型" width="70"></el-table-column>-->
             <el-table-column :formatter="formatIsEtl" prop="isEtl" label="是否清洗" width="70"></el-table-column>
-<!--            <el-table-column :formatter="formatIsAna" prop="isAnalysis" label="是否分析" width="70"></el-table-column>-->
+            <el-table-column :formatter="formatIsAna" prop="isAnalysis" label="是否分析" width="70"></el-table-column>
             <el-table-column prop="uploadTime" label="上传时间" width="90"></el-table-column>
             <!--            <el-table-column prop="updateTime" label="修改时间" width="90"></el-table-column>-->
             <el-table-column prop="etlTime" label="清洗时间" width="90"></el-table-column>
-<!--            <el-table-column prop="analysisTime" label="分析时间" width="90"></el-table-column>-->
-                        <el-table-column prop="fileSize" label="大小(kb)" width="70"></el-table-column>
+            <el-table-column prop="analysisTime" label="分析时间" width="90"></el-table-column>
+            <el-table-column prop="fileSize" label="大小(kb)" width="70"></el-table-column>
             <el-table-column prop="uuid" label="uuid" width="250"></el-table-column>
-            <el-table-column prop="url" label="下载地址" width="435"></el-table-column>
-            <el-table-column label="操作" width="210" align="center">
+            <el-table-column prop="url" label="下载地址" width="215"></el-table-column>
+            <el-table-column label="操作" width="340" align="center">
                 <template slot-scope="scope">
                     <el-button style="width: 60px;margin-left: 1px;text-align: center" type="success"
                                @click="cleanFile(scope.row)">清洗
                         <i
                                 class="el-icon-coin"></i>
                     </el-button>
-<!--                    <el-button style="width: 60px;margin-left: 1px;text-align: center" type="warning"-->
-<!--                               @click="analysisFile(scope.row)">分析-->
-<!--                        <i-->
-<!--                                class="el-icon-refresh"></i>-->
-<!--                    </el-button>-->
+                    <el-button style="width: 60px;margin-left: 1px;text-align: center" type="warning"
+                               @click="analysisFile(scope.row)">分析
+                        <i
+                                class="el-icon-refresh"></i>
+                    </el-button>
+                    <el-button style="width: 60px;margin-left: 1px;text-align: center" type="warning"
+                               @click="analysisFileTomysql(scope.row)">聚合
+                        <i
+                                class="el-icon-refresh"></i>
+                    </el-button>
                     <el-button type="primary" @click="downloadFile(scope.row)"
                                style="width: 60px;margin-left: 1px;text-align: center">下载 <i
                             class="el-icon-caret-bottom"></i></el-button>
@@ -201,7 +206,7 @@
             },
             //将后端的0&1映射为是和否
             formatIsAna(row) {
-                return row.isEtl === 1 ? "已分析" : "未分析";
+                return row.isAnalysis === 1 ? "已分析" : "未分析";
             },
             //文件上传成功回传
             uploadToHdfsSuccess(res) {
@@ -219,8 +224,12 @@
             },
 
             downloadFile(row) {
-                //如果是清洗过的文件，则从hdfs下载
-                window.open(row.url + "/" + row.isEtl + '/' + row.etlTime.substr(0, 10))
+                if (row.isEtl === 1) {
+                    //如果是清洗过的文件，则从hdfs下载
+                    window.open(row.url + "/" + row.isEtl + '/' + row.etlTime.substr(0, 10))
+                } else {
+                    this.$message.error("文件未清洗！")
+                }
             },
             cleanFile(row) {
                 if (row.isEtl === 1) {
@@ -243,20 +252,38 @@
             analysisFile(row) {
                 if (row.isAnalysis === 1) {
                     this.$message.error("文件已分析！")
+                } else if (row.isEtl === 0) {
+                    this.$message.error("文件未清洗！")
                 } else {
-                    this.$message.success("文件正在分析处理中，请等待....")
-                    this.request.get("/sparkCon/analysisFile/" + row.id).then(res => {
+                    this.$message.success("宽表生成中，请等待....")
+                    this.request.get("/sparkCon/dwsAlbum/" + row.id).then(res => {
                         console.log(res);
                         this.getData()
                         if (res.code === '200') {
-                            this.getData()
-                            this.$message.success("分析成功！")
+                            this.$message.success("宽表生成成功！")
                         } else {
-                            this.$message.error("分析失败！" + "\n" + res.msg)
+                            this.$message.error("宽表生成失败！" + "\n" + res.msg)
                         }
                     })
                 }
+            },
+            analysisFileTomysql(row) {
+                this.$message.success("聚合数据中，请等待....")
+                this.request.get('/sparkCon/adsAlbumGnereYear/' + row.id).then(
+                    res => {
+                        console.log(res);
+                        this.getData()
+                        this.$message.success("聚合数据中，请等待....")
+                        if (res.code === '200') {
+                            this.$message.success("聚合成功！")
+                        } else {
+                            this.$message.error("聚合失败！" + "\n" + res.msg)
+                        }
+                    }
+                )
             }
+
+
         }
     }
 </script>

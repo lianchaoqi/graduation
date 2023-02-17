@@ -10,6 +10,7 @@ import com.jack.graduation.service.FileService;
 import com.jack.graduation.service.SparkFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -19,7 +20,7 @@ import java.util.Date;
  * @BelongsPackage: com.jack.graduation.controller
  * @Author: jack
  * @CreateTime: 2023-01-09  18:55
- * @Description: TODO
+ * @Description: a
  * @Version: jdk1.8
  */
 @RestController
@@ -37,12 +38,12 @@ public class SparkController {
         QueryWrapper<FileInfo> fileInfoQueryWrapper = new QueryWrapper<>();
         fileInfoQueryWrapper.eq("id", id);
         FileInfo one = fileService.getOne(fileInfoQueryWrapper);
-        //获取当前时间
+        //TODO:获取当前时间
         Date date = new Date(System.currentTimeMillis());
-        //时间格式转换
+        //TODO:时间格式转换
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String etlTime = dateFormat.format(date);
-        //调用spark 程序清洗
+        //TODO:调用spark程序清洗
         boolean res = false;
         try {
             res = sparkFileService.fileEtl(hdfsConfig.getHdfsPath(), hdfsConfig.getHdfsCleanPath(), one, etlTime);
@@ -52,7 +53,7 @@ public class SparkController {
         if (res) {
             one.setEtlTime(date);
             one.setIsEtl(1);
-            //mysql数据修改
+            //TODO:mysql数据修改
             boolean resMysql = fileService.updateById(one);
             if (resMysql) {
                 return Result.success("清洗成功！");
@@ -63,17 +64,28 @@ public class SparkController {
         return Result.error(Constants.CODE_500, "spark异常，清洗系统错误！");
     }
 
-    @GetMapping("/dwsAlbum/{dt}/{filename}")
-    public Result analysisFile(@PathVariable String dt, @PathVariable String filename) {
-        boolean dwdToDwsRes = sparkFileService.albumDwdToDws(dt, filename);
+    //TODO:宽表生成
+//    @GetMapping("/dwsAlbum/{dt}/{filename}")
+    @GetMapping("/dwsAlbum/{id}")
+    public Result dwsAlbum(@PathVariable("id") int id) {
+        //TODO:获取文件分区信息
+        FileInfo fileInfo = fileService.getById(id);
+        String filename = fileInfo.getUuid();
+        //TODO:时间格式转换
+        SimpleDateFormat dateFormatEtlTime = new SimpleDateFormat("yyyy-MM-dd");
+        String dt = dateFormatEtlTime.format(fileInfo.getEtlTime());
+        System.out.println("con:"+dt);
+        System.out.println("con:"+filename);
         try {
+            //TODO:hive宽表生成
+            boolean dwdToDwsRes = sparkFileService.albumDwdToDws(dt, filename);
             if (dwdToDwsRes) {
-                //获取当前时间
+                //TODO:获取当前时间
                 Date date = new Date(System.currentTimeMillis());
-                //时间格式转换
+                //TODO:时间格式转换
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String createTime = dateFormat.format(date);
-                //宽表album
+                //TODO:宽表album写入mysql
                 Result res = sparkFileService.dwsAlbum(dt, filename, createTime);
                 if (res != null) {
                     return Result.success("true");
@@ -82,18 +94,40 @@ public class SparkController {
         } catch (Exception e) {
             throw new ServiceException(Constants.CODE_500, e.getMessage());
         }
-        return Result.success("false");
+        return Result.error(Constants.CODE_500,"宽表生成错误");
     }
 
-    //流派年份维度
-    @GetMapping("/adsAlbumGnereYear/{dt}/{filename}")
+    //TODO:流派年份维度
+    @GetMapping("/adsAlbumGnereYear/{id}")
     public Result adsAlbumGnereYear(
-            @PathVariable("dt") String dt,
-            @PathVariable("filename") String filename) {
-        return sparkFileService.adsAlbumGnereYear(dt, filename);
+            @PathVariable("id") String id) {
+        FileInfo fileInfo = null;
+        Result result = null;
+        //TODO:获取当前时间
+        Date analysisDate = new Date(System.currentTimeMillis());
+        try {
+            //TODO:获取文件分区信息
+            fileInfo = fileService.getById(id);
+            String filename = fileInfo.getUuid();
+            //TODO:时间格式转换
+            SimpleDateFormat dateFormatEtlTime = new SimpleDateFormat("yyyy-MM-dd");
+            String dt = dateFormatEtlTime.format(fileInfo.getEtlTime());
+            result = sparkFileService.adsAlbumGnereYear(dt, filename);
+        } catch (Exception e) {
+            throw new ServiceException(Constants.CODE_500, e.getMessage());
+        }
+        if ("200".equals(result.getCode())) {
+            fileInfo.setAnalysisTime(analysisDate);
+            fileInfo.setIsAnalysis(1);
+            if (fileService.updateById(fileInfo)) {
+                return Result.success("分析成功！");
+            } else {
+                return Result.error(Constants.CODE_500, "分析失败！系统错误");
+            }
+        }
+        return Result.error(Constants.CODE_500, "spark异常，分析系统错误！");
     }
-
-    //国家流派年份维度
+    //TODO:国家流派年份维度
     @GetMapping("/adsAlbumCountryGnereYear/{dt}/{filename}")
     public Result adsAlbumCountryGnereYear(
             @PathVariable("dt") String dt,

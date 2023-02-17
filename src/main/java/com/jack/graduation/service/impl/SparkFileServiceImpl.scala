@@ -38,7 +38,7 @@ class SparkFileServiceImpl @Autowired()(sparkSession: SparkSession, sc: SparkCon
              |       artist_id,
              |       album_title,
              |       genre,
-             |       year_of_pub,
+             |       substr(year_of_pub,1,4),
              |       num_of_tracks,
              |       num_of_sales,
              |       rolling_stone_critic,
@@ -46,10 +46,10 @@ class SparkFileServiceImpl @Autowired()(sparkSession: SparkSession, sc: SparkCon
              |       music_maniac_critic,
              |       '$etlTime'
              |from `graduation`.`ods_albums`
-             |where (artist_id != '' and artist_id is not null)
+             |where artist_id is not null
              |  and (genre != '' and genre is not null)
-             |  and (id != '' and id is not null)
-             |  and (num_of_sales != '' and num_of_sales is not null)
+             |  and id is not null
+             |  and num_of_sales is not null
              |  and  dt='${etlTime.substring(0, 10)}'
              |  and filename='${fileinfo.getUuid}'
              |""".stripMargin)
@@ -178,6 +178,7 @@ class SparkFileServiceImpl @Autowired()(sparkSession: SparkSession, sc: SparkCon
 
   //dws_alnum
   override def dwsAlbum(dt: String, filename: String, createTime: String): Result = {
+
     //写入数据
     try {
       val resDS: Dataset[DwsAlbum] =
@@ -243,7 +244,7 @@ class SparkFileServiceImpl @Autowired()(sparkSession: SparkSession, sc: SparkCon
         .option("user", SparkConstans.JDBC_USER)
         .option("password", SparkConstans.JDBC_PASSWORD)
         .option("dbtable", "album_detail")
-        .mode(SaveMode.Overwrite)
+        .mode(SaveMode.Append)
         .save()
     } catch {
       //跑出错误信息
@@ -254,6 +255,8 @@ class SparkFileServiceImpl @Autowired()(sparkSession: SparkSession, sc: SparkCon
 
   //adsAlbumYear 流派维度聚合表
   override def adsAlbumGnereYear(dt: String, filename: String): Result = {
+    println("dt:"+dt)
+    println("filename:"+filename)
     try {
       val resDF: DataFrame = sparkSession.sql(
         s"""
@@ -284,7 +287,7 @@ class SparkFileServiceImpl @Autowired()(sparkSession: SparkSession, sc: SparkCon
         .option("user", SparkConstans.JDBC_USER)
         .option("password", SparkConstans.JDBC_PASSWORD)
         .option("dbtable", "ads_album_gnere_year_nd")
-        .mode(SaveMode.Overwrite)
+        .mode(SaveMode.Append)
         .save()
     } catch {
       case e: Any => return Result.error(Constants.CODE_500, e.getMessage)
@@ -326,7 +329,7 @@ class SparkFileServiceImpl @Autowired()(sparkSession: SparkSession, sc: SparkCon
         .option("user", SparkConstans.JDBC_USER)
         .option("password", SparkConstans.JDBC_PASSWORD)
         .option("dbtable", "ads_album_country_gnere_year_nd")
-        .mode(SaveMode.Overwrite)
+        .mode(SaveMode.Append)
         .save()
 
     } catch {

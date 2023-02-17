@@ -74,7 +74,7 @@
             return {
                 genre: '',
                 filename: '',
-                defaultGenre: 'Indie',
+                defaultGenre: 'Rock',
                 startYear: '',
                 endYear: '',
                 genreArr: [],
